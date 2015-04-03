@@ -1,0 +1,61 @@
+\chapter{Problématique et objectifs}
+
+\section{Contexte du projet}
+\subsection{Le cadre : AMEX}
+L'application AMEX est une plateforme d'échange de messages pouvant gérer aussi bien des échanges inter-applicatifs au sein du système d'information que des échanges avec les partenaires externes d'Amundi.
+C'est une plateforme multi-format et multi-canal. Elle permet l'échange de messages sous différents formats, ceux-ci pouvant être standarisés (le plus connu étant SWIFT, format créé par un partenariat des plus grandes banques mondiales) ou propriétaires c'est à dire développé sprécialement pour communiquer avec un partenaire spécifique. Les messages peuvent être envoyés via différents supports (JMS, Web Services, Fax, Fichier, File MQ, Imprimantes, Mail). \\
+
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.8]{Images/amex.png}
+\caption{Les flux Amex} %la légende
+\end{figure} %on ferme l'environnement figure
+
+Amex définit un format d'échange pivot : le STPML qui est un format créé à partir du XML. Il est utilisé pour communiquer entre les applications du système d'information. Ainsi, tout message entrant dans amex sera tranformé en stpml puis transformé en format de sortie (lisible par l'application de sortie). \\
+Un flowdetail est un composant technique décrivant l'entrée ou la sortie d'un flux de communication. Ainsi lours de la crétion d'un nouveau flux, l'utilisateur créera deux Flowdetails, un représentant l'entré du flux (input) et un autre représentant sa sortie (output). Un flowdetail contient des informations permettant de connaitre l'emetteur et le destinataire du message ainsi que son format, média (d'entré ou de sorti). 
+Ce composant est nécessaire pour le routage du message mais aussi pour l'audit. 
+
+Amex a un service d'Audit permettant de sauvegarder tous les messages transitants par cette plateforme. \\
+
+
+
+
+\subsection{Utilisation d'Amex}
+
+Avec la description d'Amex de la section précédente, il est maintenant possible de comprendre comment se passe la mise en place d'un flux sur la plateforme. Le but est d'intégrer dans Amex un fichier envoyé par un partenaire. 
+Tout d'abord, il va falloir définir l'emplacement pour récupérer le fichier. Ensuite, il faudra créer deux flowdetails (input et output) représentant le flux. A l'arrivée du message (fichier), voici les différentes étapes :  
+\begin{enumerate}
+	\item Audit du fichier
+	\item Transformation du fichier en STPML
+	\item Autre traitement si besoin (modification, enrichissement de données)
+	\item Audit du message
+	\item Envoi du message
+\end{enumerate}
+
+L'étape qui nous interesse particulièrement est la création des FlowDetails. Une interface permet de créer des FlowDetails lors de la déclaration d'un nouveau flux. Cette interface est utilisée par des personnes de la MOE principalement pour des tests et par des personnes de la MOA lors de la création de nouveaux flux. Le but de mon stage est de faciliter le travail de ces personnes en proposant une implémentation plus efficace des FlowDetails. Ainsi j'ai résumé les deux premières grandes étapes dans le diagramme ci-dessous. 
+
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.8]{Images/workflow.png}
+\caption{Worflow du projet} %la légende
+\end{figure} %on ferme l'environnement figure
+
+\newpage
+\section{Travail à réaliser}
+Mon stage de six mois consiste en une refonte totale du composant FlowDetails. Le but principal étant d'améliorer les performances notament lors de la création des FlowDetails mais aussi de permettre une modélisation plus claire et évolutive. Mon travail peut être divisé en trois principales étapes. 
+
+La première étant de réaliser un travail d'analyse de l'éxistant afin de comprendre la modélisation actuelle des FlowDetails et les différents services utilsant ce composant. Le but est ensuite de proposer une nouvelle modélisation base de données de ces composants. 
+Dans un deuxième temps, il faudra implémenter et mettre en place la nouvelle modélisation et ainsi adapter les interfaces IHM, ce client d'administration des FlowDetails devra répondre aux besoins des MOA. 
+La dernière étape sera de créer d'exposer ces services d'administration sous forme de service REST afin de permettre un découplage applicatif nécessaire aux évolutions du middleware.  
+
+Ainsi, pendant ces six premières semaines, mon travail se divise en trois étapes. Dans un premier temps, j'ai effectué une analyse de l'existant afin de comprendre la modélisation de ce composant et les différents services l'utilisant. Après cette analyse, j'ai donc réfléchis aux différents inconvénients de la modélisation éxistante afin de proposer des modifications en prenant en compte certains éléments. 
+
+La troisième étape consiste en un recopiage de toutes les données enregistrées dans l'ancienne modélisation vers la nouvelle. 
+
+Mon travail a été réalisé suivant un cycle précis permettant d'aboutir à une validation de la nouvelle modélisation que j'ai proposé. 
+
+
+
+
+\section{Objectifs précis}
+

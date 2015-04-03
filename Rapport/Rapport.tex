@@ -1,0 +1,108 @@
+\documentclass[12pt,a4paper,twoside]{report}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{a4wide} 
+\usepackage{amsmath}
+\usepackage{amssymb} 
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{fancybox}
+%\usepackage{moreverb}
+\usepackage[T1]{fontenc}
+% \usepackage{hangcaption}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[latin9]{inputenc}
+\usepackage[francais]{babel}
+
+%\fbox{}
+%\shadowbox{}
+%\doublebox{}
+%\ovalbox{}
+%\Ovalbox{}
+%\shabox{}
+
+
+% --- Logo Atos ---
+%\makebox[\textwidth][l]{
+%\raisebox{-15pt}[0pt][0pt]{
+%\hspace{2.5cm}
+%\includegraphics[scale=0.1]{Images/logo_atos.eps}
+%}
+%}
+\title{Rapport de projet de fin d'\'etudes}
+\author{Nom et Prénom Etudiant}
+\date{\today}
+
+\pagestyle{headings}
+
+\begin{document}
+%\lstset{ numbers=left, tabsize=3, frame=single, numberstyle=\ttfamily, basicstyle=\footnotesize} 
+\thispagestyle{empty}
+
+\begin{center}
+\makebox[\textwidth][l]{
+\raisebox{-8pt}[0pt][0pt]{
+%\includegraphics[scale=0.18]{Images/logo_entreprise}
+}
+}
+\makebox[\textwidth][r]{
+\raisebox{0pt}[0pt][0pt]{
+\includegraphics[scale=0.2]{Images/logo_ensimag.PNG}
+}
+}
+Grenoble INP  -- ENSIMAG\\
+Ecole Nationale Sup\`erieure d'Informatique et de Math\'ematiques Appliqu\'ees\\
+\vspace{3cm}
+{\LARGE Rapport de Projet de Fin d'Etudes }\\
+\vspace{1cm}
+Effectu\'e chez Amundi en tant que prestataire Aubay\\
+\vspace{2cm}
+\shadowbox{
+\begin{minipage}{1\textwidth}
+\begin{center}
+{\Huge Titre du Sujet de Stage}\\
+\end{center}
+\end{minipage}
+}\\
+\vspace{3cm}
+Andr\'e Mathilde\\
+3A -- Graphics, Vision and Robotics\\
+\vspace{3mm}
+02 Mars 2015 -- 31 Ao\^ut 2015\\
+\vspace{3,5cm}
+\begin{tabular}{p{10cm}p{10cm}}
+{\bf Amundi}                                            &{\bf Responsable de stage}\\
+{\footnotesize 90 Boulevard Pasteur}       & ~~~Nom Et Prenom Tuteur Entreprise\\
+{\footnotesize BP XX}                                        & {\bf Tuteur de l'ecole}\\
+{\footnotesize 75015 Paris}                          & ~~~Rippert Christophe\\
+\end{tabular}
+\end{center}
+\newpage
+\renewcommand{\contentsname}{Table des mati\`eres} % Dans le corps du document,avant la commande \tableofcontents.
+\tableofcontents
+
+\newpage
+\input{resume.tex}
+
+\input{intro.tex}
+
+\newpage
+\input{entreprises.tex}
+
+\newpage
+\input{problematique.tex}
+
+\newpage
+\input{solutionsTechniques.tex}
+\newpage
+
+\input{avancement.tex}
+
+\newpage
+\input{impressions.tex}
+
+\newpage
+\input{annexe.tex}
+\end{document}
