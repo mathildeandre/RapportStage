@@ -3,7 +3,7 @@
 \section{Aubay}
 
 \section{Amundi}
-Amundi est une filiale du groupe Crédit Agricole SA et de la Société Générale. 
+Amundi est une société de conseil en épargne salariale, née du partenariat du groupe Crédit Agricole SA (actionnaire à 80\%) et de la Société Générale (actionnaire à 20\%). 
 Cette entreprise de gestion des actifs compte parmis les plus grands acteurs de l'industrie de l'asset management
 mondial.
 
@@ -19,12 +19,14 @@ Le domaine MFX a en charge le développement et la maintenance des applications u
 Dans le domaine on va distinguer quatre types d'applications : 
 \begin{enumerate}
 	\item Applications permettant d'assurer le cycle de vie des transactions : ETC (Electronic Trade Confirmation) pour le Matching Broker et ETD (Electronic Trade Delivery) pour le règlement-livraison (le dépositaire et le valorisateur).
-	\item Application permettant d'assurer le cycle de vie des titre financiers (Intégration des opérations sur titres) : MOCA, Middle Office Corporate Action.
+	\item Application permettant d'assurer le cycle de vie des titres financiers (Intégration des opérations sur titres) : MOCA, Middle Office Corporate Action.
 	\item Application permettant l'intégration des collectes des souscription-rachats sur les fonds Amundi : GSR, Gestion des souscriptions-rachats.
 	\item Une plateforme d'échange AMEX dont le périmètre va au delà du domaine MFX, mais dont le développement et la maintenance du socle technique est de la responsabilité du domaine MFX. 
 \end{enumerate}
 
-Je travaille sur la plateforme Amex et plus précisément sur une refonte totale d'un de ses composants, les FlowDetails. Le but principal de cette refonte pour les équipes utilisant AMEX est une amélioration des performances.\\ 
+
+Amundi gère certaines applications qui ont besoin de communiquer entre elles en envoyant et reçevant de nombreux messages. Ces derniers transitent à travers une même application appelée Amex. 
+J'ai travaillé sur la plateforme Amex et plus précisément sur une refonte totale d'un de ses composants, les FlowDetails. Le but principal de cette refonte pour les équipes utilisant AMEX est une amélioration des performances.\\ 
 
 \begin{figure}[!h] %on ouvre l'environnement figure
 \center
