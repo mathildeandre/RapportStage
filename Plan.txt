@@ -1,0 +1,77 @@
+
+
+=> Présentation de la problématique du projet : 
+	- contexte (vue d'ensemble) 
+
+	Présentation du logiciel Amex
+
+	- Travail à réaliser / problème à résoudre
+
+	Présentation sujet de stage	
+
+	- Objectifs précis attendus
+
+	Pourquoi une refonte des FlowDetails ?
+		* Ajout Historique des médias et contacts
+
+		* Manque d'info en base, bcp de traitements dans le code
+
+		* Les flux : "refractoring" : création d'une api faisant le routage par format et 
+le routage par média. Bcp de cas par cas. 
+
+		* Les écrans : Réunion MOA afin de savoir les modifications qu'elles souhaiteraient 
+dans les modules utilisatn les FD. Arbre RS, possibilité de faire une recherche plus précise
+
+		* Suppression de certaines étapes de création d'un FD
+
+
+=> Solutions techniques étudiées ou mises en oeuvre (10 pages)
+	- synthèse de l'existant : couverture fonctionnelle existante (architecture logicielle)
+				   contraintes inhérentes au projet (outils, librairies, ...)
+				   s'appuyant sur une bibliographie précise.
+
+
+		Présentation des outils utilisés
+
+
+
+
+	- Description de la (ou des) solutions envisagées et des outils utilisés
+
+
+	Proposition d'une nouvelle modélisation base de données avec diagramme entités relation. 
+		* Décisions prises : 
+			Explications Contact/Média
+			Historique
+			MQ
+			Suppression task handler
+		* Avantages de la nouvelle : plus évolutive
+		* Comment gérer l'historique ? (table d'archivage non utile)
+		* Processus de validation
+	
+	Recopie des données de l'ancienne modélisation vers la nouvelle
+		* Programme Java : pourquoi ce choix ? 
+		* Parser fichier xml
+
+	Mise en place des services
+		* Choix Hibernate : non
+		* Utilisation de jdbc
+		* Les EJB
+		
+	
+	Impcater les écrans
+		* TableComboBox de jideSoft
+		* Rendre plus efficace la création d'un FD : suppression d'étapes.
+
+	Modification des apis et flux	
+		* Pour le routage par format et le routage par média, création d'un service générique
+
+	
+
+
+
+	- Protocole d'évaluation envisagé pour valider la solution ou mesurer son efficacité
+		* Grande phase de test pour la MOA
+
+		Avant la mise en production... 
+

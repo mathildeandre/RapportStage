@@ -1,4 +1,7 @@
 \chapter{Les solutions techniques}
+Au cours de ca chapitre, je vais vous présenter les différentes solutions techniques mises en oeuvre pour la réalisation
+du projet. Des décisions techniques ont été prises tout au long de la réalisation du projet. C'est pourquoi, 
+j'ai décidé de présenter chaque étape de réalisation et de détailler pour chacune les solutions ayant été choisies. 
 
 \section{Syntheses de l'existant}
 Avant de vous décrire la partie technique de mon travail, je vais vous introduire les principales technologies et principaux logiciels que j'ai utilisé. \\
@@ -22,9 +25,8 @@ Certains termes techniques seront utilisés au long de cette section. En annexe, 
 \section{Description du travail}
 
 \subsection{Analyse de l'éxistant}
-La première phase de mon travail a consisté en une analyse de la modélisation base de données des FlowDetails. Après avoir installé l'environnement de travail et tous les outils nécessaires, j'ai pu analyser le projet et plus particulièrement tout ce qui concernait les FlowDetails. \\
+Le diagramme entité relation représentant l'ancienne modélisation est en annexe : ....
 
-Ainsi, j'ai pu réaliser un diagramme entité relations représentant la modélisation base de données éxistante des FlowDetails. Voir annexe : Modélisation des FlowDetails existants. Cela m'a permis d'analyser tous les objets en relation avec les FlowDetails et ainsi de relever certains problèmes posés par cette modélisation.   
 
 \subsubsection{Les API utilisant les FlowDetails}
 Dans la plateforme Amex, il y a différentes services  qui utilisent les flowdetails. Je vais décrire le fonctionnement de chacun d'eux. \\
@@ -37,6 +39,49 @@ Il éxiste des objets TaskHandler permettant de savoir comment créer le message à
 
 
 \subsection{La nouvelle modélisation}
+La première étape a été de réaliser une nouvelle modélisation base de données des composants en relation avec les 
+FlowDetails. Cette modélisation doit être évolutive et cohérente avec le besoin des MOA. 
+
+Le diagramme entité relation a été réalisé avec le logiciel VPUml et se trouve en annexe ... lien .... 
+\newline
+\\
+De nombreuses modifications ont été réalisées, je vais seulement décrire les plus importantes. 
+\newline
+
+Une FlowDetail décrit l'entrée ou la sortie d'un flux et contient des informations nécessaires pour l'audit des messages mais aussi pour son routage. Pour l'envoi d'un message il est nécessaire de connaître son média de sorti, son format de sorti mais aussi sa destination. 
+Il éxiste 7 types de média différents : 
+\begin{enumerate}
+	\item PRINTER
+	\item FILE
+	\item JMS
+	\item FAX
+	\item WEB SERVICE
+	\item MQ
+	\item MAIL
+\end{enumerate}
+
+Les informations sur la destination d'un message dépendent du média utilisé, par exemple un média FAX est représenté par un numéro de FAX, un média MAIL par un ensemble d'adresses mail...etc
+Un média MAIL est donc un ensemble d'adresses mail accompagnés de leur catégorie (mail bb, mail cc...). 
+
+Il éxiste une table différente pour chaque type de média, ce qui permet de typé fortement les médias, c'est à dire qu'un média peut contenir différentes informations qui lui sont propres. Par exemple pour envoyer un message par média FAX, seul le numéro de fax est utile, par contre pour envoyer un message par média JMS, il faut connaitre le nom de la file JMS ainsi que le serveur l'hébergeant. Cette modélisation permet donc de modifier très rapidement un média si cela est nécessaire. 
+\newline
+Un message transitant dans Amex peut avoir différents format. 
+
+Lorsqu'un message passe dans un certain statut d'audit, il est possible de paramétrer des taches à éxécuter, comme lenvoi d'un email ou l'appel à un web service distant ou autre tache. Afin de savoir comment créer le message, la méthode 
+d'une classe java est appelée. Ces informations étaient enregistrées en bdd dans la table TASK\_HANDLER. Mais les informations dont on a besoin ici correspondent exactement à celles enregistrées dans l'objet flowdetail à la seule différence prêt que le message est créé avec l'appel d'une méthode java. C'est pourquoi il éxiste un type de format custom qui est utilisé pour ce service. Ainsi le nom du format sera le nom de la transformation à utiliser, le sous-format sera le nom de la classe à appeler et le type ``custom''.
+Il est important de pouvoir garder une trace de toutes les actions effectuées. Nous proposons donc un système d'historique pour les flowdetails, les médias et les contacts. Lorsqu'un FlowDetail par exemple est modifié (changement de label ou 
+erreur dans sa valeur), celui-ci n'est pas supprimé mais devient inactif. Un FlowDetail actif a une date de validité de fin valant ``9999-12-31''. L'exemple ci-dessous montre le fonctionnement : 
+
+
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.9]{Images/HistoFlow.PNG}
+\caption{Modification d'un FlowDetail} %la légende
+\end{figure} %on ferme l'environnement figure
+
+C'est la référence du média qui est stocké dans la table FlowDetail. Ainsi si un média est modifié, il n'est pas utile de modifier les flowdetail utilisant ce média, car sa référence reste la même mais son id change . Pour connaitre le média associé à un FD, une jointure avec les tables de médias est effectuée, et c'est le média avec la plus grande date de validité de fin qui est sélectionné. 
+Cela explique pourquoi certains liens n'apparaissent pas dans la modélisation. 
+
 
 \subsection{Migration de l'existant}
 
