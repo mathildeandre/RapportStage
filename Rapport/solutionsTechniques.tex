@@ -6,8 +6,38 @@ j'ai décidé de présenter chaque étape de réalisation et de détailler pour chacun
 \section{Syntheses de l'existant}
 Avant de vous décrire la partie technique de mon travail, je vais vous introduire les principales technologies et principaux logiciels que j'ai utilisé. \\
 
-\subsection{Langage de développement}
-L'application sur laquelle je travaille est développée en Java EE, soit Java Entreprise Edition. C'est la version de Java destinée aux applications des entreprises. 
+\subsection{Langage de développement et concepts de programmation}
+\textbf{J2EE}
+\newline
+L'application sur laquelle je travaille est développée en Java J2EE, soit Java Entreprise Edition. C'est la version de Java destinée aux applications des entreprises. J2EE constitue une collection de composants, de conteneurs et de services permettant de créer et de déployer des applications distribuées au sein d'une architecture stadardisée. L'un des intérets d'une programmation objet est de construire des objets indépendants les uns des autres, pour pouvoir les réutiliser par la suite, dans d'autres programmes.
+\newline
+
+\textbf{Archistecture 3 tiers}
+\newline
+J2EE se fonde sur un modèle en plusieurs couches, on parle d'architecture multi-tiers : 
+\begin{itemize}
+	\item Le tier Client
+	\item Le tier servuer J2EE composé d'un tier métier.
+	\item Le tier EIS (Entreprise Information Systems)
+\end{itemize}
+
+Le tier clien est un client lourd car Amex est basé sur Spring. 
+
+Le tier métier utilise des EJB (Entreprise JavaBean), notamment les Session Bean qui implantent un dialogue client serveur pour accomplir une tache. 
+
+Le tier EIS concerne la base de données (Sybase et SQL), il est matérialisé par des classes Java au niveau tier métier.
+
+image application 3 tiers
+
+
+\subsubsection{Le design pattern IoC}
+En temps normal, une application définit ses propres variables et objets. Elle se construit de manière autonome. Cela peut être gênant lorsque certains éléments ne sont pas connus à l'avance, et ne seront connus que lors de l'exécution du programme. Pour cette raison, le design pattern IoC, ou Inversion Of Control a été mis en place.
+
+L'inversion de contrôle est un patron d'architecture commun à tous les frameworks (ou cadre de développement et d'exécution). Il fonctionne selon le principe que le flot d'exécution d'un logiciel n'est plus sous le contrôle direct de l'application elle-même mais du framework ou de la couche logicielle sous-jacente.
+L'inversion de contrôle est un terme générique. Selon la problématique, il existe différentes formes, ou représentations d'IoC. La plus connue étant l'injection de dépendances qui est un patron de conception permettant, en programmation orientée objet, de découpler les dépendances entre objets.
+
+Dans notre cas c'est Spring qui se charge de mettre en relation les objets entre eux. Ainsi, dans le cas d'un programme nécessitant de se connecter à un serveur, mais dont l'adresse du serveur peut changer, un programme classique obligerait de modifier le code source à chaque changement d’adresse du serveur. Spring permet de créer un fichier séparé contenant ces informations, et de lier automatiquement la valeur de ce fichier à la variable contenue dans le programme utilisant cette valeur.
+
 
 \subsection{Les outils utilisés}
 Sybase pour la base de données. \\
@@ -72,7 +102,7 @@ d'une classe java est appelée. Ces informations étaient enregistrées en bdd dans
 Il est important de pouvoir garder une trace de toutes les actions effectuées. Nous proposons donc un système d'historique pour les flowdetails, les médias et les contacts. Lorsqu'un FlowDetail par exemple est modifié (changement de label ou 
 erreur dans sa valeur), celui-ci n'est pas supprimé mais devient inactif. Un FlowDetail actif a une date de validité de fin valant ``9999-12-31''. L'exemple ci-dessous montre le fonctionnement : 
 
-
+\newpage
 \begin{figure}[ht!] %on ouvre l'environnement figure
 \centering
 \includegraphics[scale=0.9]{Images/HistoFlow.PNG}
@@ -84,10 +114,75 @@ Cela explique pourquoi certains liens n'apparaissent pas dans la modélisation.
 
 
 \subsection{Migration de l'existant}
+Amex contient déjà un certains nombres de flux et donc de nombreux FlowDetails sont déjà sauvegardés en base de donnée. Il a donc fallu migrer les données de l'ancienne modélisation vers la nouvelle sans en perdre une seule. 
+J'ai décidé de faire ce programme de migration en JAVA et de recopier les données ``tables par tables''. L'avantage d'utiliser Java était notament de pouvoir réaliser facilement des tests afin d'être sur que rien n'avait été perdu. Tout d'abord les schedules ont été recopiés, puis les formats, parties, les médias, les contacts et les FlowDetails. 
+Le arbres utilisant les TaskHandler ont du être modifiés.
+
+La nouvelle modélisation contient uniquement des noms de table différents. Le programme consite donc à peupler les nouvelles tables avec les données éxistantes. 
+
+La seule modification devant avoir lieu directement sur une table éxistante concerne les arbres RuleSolver utilisant des TaskHandler. 
+L'id du TaskHandler était stocké en base de données afin de retrouver le TaskHandler correspondant à un noeud résultat. Il est plus générique et plus correcte de stocker une référence au lieu d'un id, ainsi lors de la modification d'une modification, la référence reste la même donc aucune modification ne doit être effectuée sur les arbres. C'est donc la référence du FlowDetail (celui correspondant à l'encien TaskHandler) qui est stockée dans ces arbres RS. 
+\newline
+
+Pour un message SWIFT, seul était enregistré les coordonnées du contact swift sender et receiver, mais en réalité ce message SWIFT est tout d'abord envoyé par file MQ par exemple puis sur la Plateforme Swift. Les noms de files MQ correspondantes étaient stockées dans un fichier properties directement dans le projet. De plus un fichier xml permettait de trouver la bonne MQ en fonction du BIC du sender Swift et du Receiver Swift : 
+
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.9]{Images/XmlSwift.PNG}
+\caption{Routage d'un FlowDetail Swift} %la légende
+\end{figure} %on ferme l'environnement figure
+
+Lors de l'appel au bean SwiftGsmSgss54XCriteria, une méthode la classe SwiftRoutingCriteria est appelée et permet de trouver le bon channel en fonction des BIC du sender et receiver. Ainsi un si les BICS correspondent à ceux de la figure ci dessus, alors le channel correspondant est SwiftGsmSgss54XChannel, ce dernier permettra de retrouver le nom de la file MQ.
+
+Avec la nouvelle modélisation, ces étapes ne sont plus nécessaire car ces données seront directement stockées en base. 
+
+Afin de connaitre la valeur des médias correspondants au FlowDetail SWIFT, il a donc fallu parcourir les fichiers XML puis les fichiers properties. Le parcourt des fichiers XML a été fait à l'aide d'un outil appelé JDOM dont le but est de manipuler un document Xml. Pour chaque bean ayant la même structure que celui ci-dessus, une ligne était créé et enregistré dans un nouveau fichier properties : 
+
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.9]{Images/XmlProp.PNG}
+\caption{Ligne correspondante créée} %la légende
+\end{figure} %on ferme l'environnement figure
+
+Dans le programme de migration, la clé correspondante est créé en fonction du swift sender et swift receiver, il est ainsi possible de récupérer sa valeur (le channel) dans le nouveau fichier properties. La valeur du média est ensuite récupérée dans l'autre fichier properties ou les nom de MQ sont définis et associées aux channels. 
+\newpage
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.9]{Images/SwiftProp2.PNG}
+\caption{Ancien fichier properties} %la légende
+\end{figure} %on ferme l'environnement figure
+
 
 \subsection{Refonte des IHM}
+Plusieurs interfaces homme machine (IHM) ont du être modifiées afin d'utiliser les nouveaux objets. Deux modules du logiciel MediaPlus Alto utilisent les FlowDetails : StpFlow et StpMonitoring et contiennent plusieurs fenêtres chacun correspondant à un projet JAVA: 
+\begin{itemize}
+	\item FlowDetails Viewer : permet de manipuler les FlowDetails. J'ai décidé de recréer ce projet car trop de modifications devaient être apportées, et le but était aussi de modifier les composant de l'IHM afin que les interactions utilisateurs soient plus efficaces. 
+	\item Des arbres RuleSolver : des Flowdetails ou TaskHandler sont attachés à ces arbres. 
+	\item StpMonitoring : permet de visualiser les messages transitant dans Amex et les FD correspondants.
+\end{itemize}
+
+Avant de modifier les interfaces, les objets métiers et services avec les méthodes CRUD ont été créés. 
+
+Les différents projets sont les suivants : 
+\begin{itemize}
+	\item flowdetails-common contient les objets base de données et les interfaces de service
+	\item flowdetails-server contient les implémentations des services,les EJB et les interfaces et classes DAO
+	\item flowdetails-server-ear
+	\item flowdetails-viewer correspond à l'interface de manipulation des FD.
+\end{itemize}
+
+
+\textbf{Jdbc}
+La technologie JDBC (Java DataBase Connectivity) est une interface de programmation fournie avec Java et permettant de se connecter à des bases de données. Il constitue un ensemble de classes permettant de développer des applications capables de se connecter à des serveurs de bases de données (SGBD).
+
+
+Utilisation de JIdeSoft
+Travail sur l'IHM : trop d'étapes pour créer un FD, trop de validation et de fenêtres qui s'ouvrent
+
 
 \subsection{Bascule sur les nouveaux services}
+
+
 
 
 

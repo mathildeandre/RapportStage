@@ -13,17 +13,18 @@
 \contentsline {section}{\numberline {4.3}Objectifs pr\'ecis}{10}{section.4.3}
 \contentsline {chapter}{\numberline {5}Les solutions techniques}{12}{chapter.5}
 \contentsline {section}{\numberline {5.1}Syntheses de l'existant}{12}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Langage de d\'eveloppement}{12}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Les outils utilis\'es}{12}{subsection.5.1.2}
-\contentsline {section}{\numberline {5.2}Description du travail}{12}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}Analyse de l'\'existant}{12}{subsection.5.2.1}
-\contentsline {subsubsection}{Les API utilisant les FlowDetails}{13}{section*.2}
-\contentsline {subsection}{\numberline {5.2.2}La nouvelle mod\'elisation}{13}{subsection.5.2.2}
-\contentsline {subsection}{\numberline {5.2.3}Migration de l'existant}{13}{subsection.5.2.3}
-\contentsline {subsection}{\numberline {5.2.4}Refonte des IHM}{13}{subsection.5.2.4}
-\contentsline {subsection}{\numberline {5.2.5}Bascule sur les nouveaux services}{13}{subsection.5.2.5}
-\contentsline {section}{\numberline {5.3}Protocole d'\'evaluation}{13}{section.5.3}
-\contentsline {chapter}{\numberline {6}Avancement du projet}{14}{chapter.6}
-\contentsline {chapter}{\numberline {7}Impressions personnelles}{15}{chapter.7}
-\contentsline {chapter}{\numberline {8}annexe}{16}{chapter.8}
-\contentsline {section}{\numberline {8.1}Lexique}{16}{section.8.1}
+\contentsline {subsection}{\numberline {5.1.1}Langage de d\'eveloppement et concepts de programmation}{12}{subsection.5.1.1}
+\contentsline {subsubsection}{Le design pattern IoC}{13}{section*.2}
+\contentsline {subsection}{\numberline {5.1.2}Les outils utilis\'es}{13}{subsection.5.1.2}
+\contentsline {section}{\numberline {5.2}Description du travail}{13}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Analyse de l'\'existant}{13}{subsection.5.2.1}
+\contentsline {subsubsection}{Les API utilisant les FlowDetails}{14}{section*.3}
+\contentsline {subsection}{\numberline {5.2.2}La nouvelle mod\'elisation}{14}{subsection.5.2.2}
+\contentsline {subsection}{\numberline {5.2.3}Migration de l'existant}{16}{subsection.5.2.3}
+\contentsline {subsection}{\numberline {5.2.4}Refonte des IHM}{17}{subsection.5.2.4}
+\contentsline {subsection}{\numberline {5.2.5}Bascule sur les nouveaux services}{18}{subsection.5.2.5}
+\contentsline {section}{\numberline {5.3}Protocole d'\'evaluation}{18}{section.5.3}
+\contentsline {chapter}{\numberline {6}Avancement du projet}{19}{chapter.6}
+\contentsline {chapter}{\numberline {7}Impressions personnelles}{20}{chapter.7}
+\contentsline {chapter}{\numberline {8}annexe}{21}{chapter.8}
+\contentsline {section}{\numberline {8.1}Lexique}{21}{section.8.1}
