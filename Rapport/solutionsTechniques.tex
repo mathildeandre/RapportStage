@@ -1,10 +1,10 @@
 \chapter{Les solutions techniques}
 Au cours de ca chapitre, je vais vous présenter les différentes solutions techniques mises en oeuvre pour la réalisation
-du projet. Des décisions techniques ont été prises tout au long de la réalisation du projet. C'est pourquoi, 
+du projet. Des décisions ont été prises tout au long de mon travail. C'est pourquoi, 
 j'ai décidé de présenter chaque étape de réalisation et de détailler pour chacune les solutions ayant été choisies. 
 
 \section{Syntheses de l'existant}
-Avant de vous décrire la partie technique de mon travail, je vais vous introduire les principales technologies et principaux logiciels que j'ai utilisé. \\
+Avant de vous décrire la partie technique de mon travail, je vais introduire les principales technologies et principaux logiciels que j'ai utilisé. \\
 
 \subsection{Langage de développement et concepts de programmation}
 \textbf{J2EE}
@@ -12,22 +12,28 @@ Avant de vous décrire la partie technique de mon travail, je vais vous introduir
 L'application sur laquelle je travaille est développée en Java J2EE, soit Java Entreprise Edition. C'est la version de Java destinée aux applications des entreprises. J2EE constitue une collection de composants, de conteneurs et de services permettant de créer et de déployer des applications distribuées au sein d'une architecture stadardisée. L'un des intérets d'une programmation objet est de construire des objets indépendants les uns des autres, pour pouvoir les réutiliser par la suite, dans d'autres programmes.
 \newline
 
-\textbf{Archistecture 3 tiers}
+\textbf{Architecture en couches}
 \newline
 J2EE se fonde sur un modèle en plusieurs couches, on parle d'architecture multi-tiers : 
-\begin{itemize}
-	\item Le tier Client
-	\item Le tier servuer J2EE composé d'un tier métier.
-	\item Le tier EIS (Entreprise Information Systems)
-\end{itemize}
 
-Le tier clien est un client lourd car Amex est basé sur Spring. 
+\begin{enumerate}
+	\item La couche présentation qui est un client lourd réalisé avec Swing. Elle représente l'IHM. 
+	\item La couche Service : elle regroupe différent services qui seront exposés pour des applications clientes. On retrouve dans cette couche des EJB Sessions.
+	\item La couche Métier : elle reprend tous les objets métiers de l'application, applique le logique spécifique de l'application, sans se préoccuper de savoir d'où viennent les données qu'on lui donne ni où vont les résultat qu'elle produit.
+	\item La couche persistence : 
+\end{enumerate}
+
+Le tier client est un client lourd avec Spring. 
 
 Le tier métier utilise des EJB (Entreprise JavaBean), notamment les Session Bean qui implantent un dialogue client serveur pour accomplir une tache. 
 
 Le tier EIS concerne la base de données (Sybase et SQL), il est matérialisé par des classes Java au niveau tier métier.
 
-image application 3 tiers
+\begin{figure}[ht!] %on ouvre l'environnement figure
+\centering
+\includegraphics[scale=0.9]{Images/3Tiers.png}
+\caption{Architecture d'Amex} %la légende
+\end{figure} %on ferme l'environnement figure
 
 
 \subsubsection{Le design pattern IoC}
@@ -58,14 +64,6 @@ Certains termes techniques seront utilisés au long de cette section. En annexe, 
 Le diagramme entité relation représentant l'ancienne modélisation est en annexe : ....
 
 
-\subsubsection{Les API utilisant les FlowDetails}
-Dans la plateforme Amex, il y a différentes services  qui utilisent les flowdetails. Je vais décrire le fonctionnement de chacun d'eux. \\
-
-Le service d'audit a pour but de tracer tous les messages transitant par Amex. L'audit se fait dans des tables en base de données. Il éxiste différents statuts d'Audit décrivant le statut du message transitant, par exemple un message a comme statut PENDING à sa génération, SENT à son envoi si un acquittement est attendu, SENT NO\_ACK à son envoi si aucun acquittement est attendu, ACKNOWLEDGED à son acquittement, ERROR en cas d'erreur . \\
-
-Il est possible de paramétrer des taches automatiques à éxécuter lorsqu'un message transitant par Amex passe dans un certain statut d'audit. C'est le role du service de taches automatiques. Ces taches automatiques peuvent etre un envoi d'un mail, un appel à un web service distant ou le post d'un message sur une file JMS ou MQ.
-Il éxiste des objets TaskHandler permettant de savoir comment créer le message à envoyer et à qui l'envoyer. Ces informations sont contenues dans la table TaskHandler et sont paramétrables via des arbres RuleSolver. 
-
 
 
 \subsection{La nouvelle modélisation}
@@ -78,7 +76,7 @@ Le diagramme entité relation a été réalisé avec le logiciel VPUml et se trouve e
 De nombreuses modifications ont été réalisées, je vais seulement décrire les plus importantes. 
 \newline
 
-Une FlowDetail décrit l'entrée ou la sortie d'un flux et contient des informations nécessaires pour l'audit des messages mais aussi pour son routage. Pour l'envoi d'un message il est nécessaire de connaître son média de sorti, son format de sorti mais aussi sa destination. 
+Pour rappel, un FlowDetail décrit l'entrée ou la sortie d'un flux et contient des informations nécessaires pour l'audit des messages mais aussi pour son routage. Pour l'envoi d'un message il est nécessaire de connaître son média de sorti, son format de sorti mais aussi sa destination. 
 Il éxiste 7 types de média différents : 
 \begin{enumerate}
 	\item PRINTER
@@ -93,12 +91,13 @@ Il éxiste 7 types de média différents :
 Les informations sur la destination d'un message dépendent du média utilisé, par exemple un média FAX est représenté par un numéro de FAX, un média MAIL par un ensemble d'adresses mail...etc
 Un média MAIL est donc un ensemble d'adresses mail accompagnés de leur catégorie (mail bb, mail cc...). 
 
-Il éxiste une table différente pour chaque type de média, ce qui permet de typé fortement les médias, c'est à dire qu'un média peut contenir différentes informations qui lui sont propres. Par exemple pour envoyer un message par média FAX, seul le numéro de fax est utile, par contre pour envoyer un message par média JMS, il faut connaitre le nom de la file JMS ainsi que le serveur l'hébergeant. Cette modélisation permet donc de modifier très rapidement un média si cela est nécessaire. 
+Il éxiste une table différente pour chaque type de média, ce qui permet de typé fortement les médias, c'est à dire qu'un média peut contenir différentes informations qui lui sont propres. Par exemple pour envoyer un message par média FAX, seul le numéro de fax est utile, par contre pour envoyer un message par média JMS, il faut connaitre le nom de la file JMS ainsi que le serveur l'hébergeant. Cette modélisation permet donc de modifier très un certain média sans impacter les autres. 
 \newline
-Un message transitant dans Amex peut avoir différents format. 
 
-Lorsqu'un message passe dans un certain statut d'audit, il est possible de paramétrer des taches à éxécuter, comme lenvoi d'un email ou l'appel à un web service distant ou autre tache. Afin de savoir comment créer le message, la méthode 
-d'une classe java est appelée. Ces informations étaient enregistrées en bdd dans la table TASK\_HANDLER. Mais les informations dont on a besoin ici correspondent exactement à celles enregistrées dans l'objet flowdetail à la seule différence prêt que le message est créé avec l'appel d'une méthode java. C'est pourquoi il éxiste un type de format custom qui est utilisé pour ce service. Ainsi le nom du format sera le nom de la transformation à utiliser, le sous-format sera le nom de la classe à appeler et le type ``custom''.
+Le service de taches automatiques sur un statut d'audit utilise des objets appelés TaskHanlder qui permettent de savoir comment créer le message à envoyer et à qui l'envoyer. Ces informations sont contenues dans la table TaskHandler et sont paramétrables via des arbres RuleSolver. 
+La construction d'un message se fait par l'appel d'une méthode d'une classe java. 
+Mais les informations dont on a besoin ici correspondent exactement à celles enregistrées dans l'objet Flowdetail à la seule différence prêt que le message est créé avec l'appel d'une méthode java. C'est pourquoi il éxiste un type de format custom qui est utilisé pour ce service. Ainsi le nom du format sera le nom de la transformation à utiliser, le sous-format sera le nom de la classe à appeler et son type sera ``custom''. \\
+\\
 Il est important de pouvoir garder une trace de toutes les actions effectuées. Nous proposons donc un système d'historique pour les flowdetails, les médias et les contacts. Lorsqu'un FlowDetail par exemple est modifié (changement de label ou 
 erreur dans sa valeur), celui-ci n'est pas supprimé mais devient inactif. Un FlowDetail actif a une date de validité de fin valant ``9999-12-31''. L'exemple ci-dessous montre le fonctionnement : 
 
@@ -109,19 +108,21 @@ erreur dans sa valeur), celui-ci n'est pas supprimé mais devient inactif. Un Flo
 \caption{Modification d'un FlowDetail} %la légende
 \end{figure} %on ferme l'environnement figure
 
-C'est la référence du média qui est stocké dans la table FlowDetail. Ainsi si un média est modifié, il n'est pas utile de modifier les flowdetail utilisant ce média, car sa référence reste la même mais son id change . Pour connaitre le média associé à un FD, une jointure avec les tables de médias est effectuée, et c'est le média avec la plus grande date de validité de fin qui est sélectionné. 
+Comme on peut le voir, l'id du flowdetail a changé mais la référence est restée la même. Cela permet donc de retrouver toutes les moficiations d'un flowdetail en effectuant une requete sur sa référence. Le FlowDetail à modifier est devenu inactif car sa date de validité de fin est dépassée. Le nouveau FlowDetail est actif car sa date de fin vaut ``9999-12-31''. 
+
+Le principe est le même lorsqu'un média ou un contact est modifié. 
+De plus, c'est la référence et non l'id du média qui est stocké dans la table FlowDetail. Cela permet de ne pas avoir à modifier le flowdetail lorsqu'un média a été modifié. Pour connaitre le média associé à un FD, une jointure avec les tables de médias est effectuée, et c'est le média avec la plus grande date de validité de fin qui est sélectionné. 
 Cela explique pourquoi certains liens n'apparaissent pas dans la modélisation. 
 
 
 \subsection{Migration de l'existant}
-Amex contient déjà un certains nombres de flux et donc de nombreux FlowDetails sont déjà sauvegardés en base de donnée. Il a donc fallu migrer les données de l'ancienne modélisation vers la nouvelle sans en perdre une seule. 
-J'ai décidé de faire ce programme de migration en JAVA et de recopier les données ``tables par tables''. L'avantage d'utiliser Java était notament de pouvoir réaliser facilement des tests afin d'être sur que rien n'avait été perdu. Tout d'abord les schedules ont été recopiés, puis les formats, parties, les médias, les contacts et les FlowDetails. 
-Le arbres utilisant les TaskHandler ont du être modifiés.
+Amex contient déjà un certains nombres de flux et donc de nombreux FlowDetails sont déjà sauvegardés en base de données. Il a donc fallu migrer les données de l'ancienne modélisation vers la nouvelle sans en perdre une seule. 
+J'ai décidé de faire ce programme de migration en JAVA et de recopier les données ``tables par tables''. L'avantage d'utiliser Java était notament de pouvoir réaliser facilement des tests afin d'être sur que rien n'avait été perdu. Tout d'abord les schedules ont été recopiés, puis les formats, parties, les médias, les contacts et les FlowDetails.
 
-La nouvelle modélisation contient uniquement des noms de table différents. Le programme consite donc à peupler les nouvelles tables avec les données éxistantes. 
+La nouvelle modélisation contient uniquement des noms de table différents. Le programme consite donc à peupler les nouvelles tables avec les données éxistantes et non à modifier les tables éxistantes.  
 
 La seule modification devant avoir lieu directement sur une table éxistante concerne les arbres RuleSolver utilisant des TaskHandler. 
-L'id du TaskHandler était stocké en base de données afin de retrouver le TaskHandler correspondant à un noeud résultat. Il est plus générique et plus correcte de stocker une référence au lieu d'un id, ainsi lors de la modification d'une modification, la référence reste la même donc aucune modification ne doit être effectuée sur les arbres. C'est donc la référence du FlowDetail (celui correspondant à l'encien TaskHandler) qui est stockée dans ces arbres RS. 
+L'id du TaskHandler était stocké en base de données afin de retrouver le TaskHandler correspondant à un noeud résultat. Il est plus générique et plus correcte de stocker une référence au lieu d'un id, ainsi lors de la modification d'un FlowDetail, la référence reste la même donc aucune modification ne doit être effectuée sur les arbres. C'est donc la référence du FlowDetail (celui correspondant à l'encien TaskHandler) qui est stockée dans ces arbres RS. 
 \newline
 
 Pour un message SWIFT, seul était enregistré les coordonnées du contact swift sender et receiver, mais en réalité ce message SWIFT est tout d'abord envoyé par file MQ par exemple puis sur la Plateforme Swift. Les noms de files MQ correspondantes étaient stockées dans un fichier properties directement dans le projet. De plus un fichier xml permettait de trouver la bonne MQ en fonction du BIC du sender Swift et du Receiver Swift : 
@@ -132,11 +133,11 @@ Pour un message SWIFT, seul était enregistré les coordonnées du contact swift se
 \caption{Routage d'un FlowDetail Swift} %la légende
 \end{figure} %on ferme l'environnement figure
 
-Lors de l'appel au bean SwiftGsmSgss54XCriteria, une méthode la classe SwiftRoutingCriteria est appelée et permet de trouver le bon channel en fonction des BIC du sender et receiver. Ainsi un si les BICS correspondent à ceux de la figure ci dessus, alors le channel correspondant est SwiftGsmSgss54XChannel, ce dernier permettra de retrouver le nom de la file MQ.
+Lors de l'appel au bean SwiftGsmSgss54XCriteria, une méthode de la classe SwiftRoutingCriteria est appelée et permet de trouver le bon channel en fonction des BIC du sender et receiver. Ainsi un si les BICS correspondent à ceux de la figure ci dessus, alors le channel correspondant est SwiftGsmSgss54XChannel, ce dernier permettra de retrouver le nom de la file MQ.
 
-Avec la nouvelle modélisation, ces étapes ne sont plus nécessaire car ces données seront directement stockées en base. 
+Avec la nouvelle modélisation, ces étapes ne sont plus nécessaire car ces données sont directement stockées en base. 
 
-Afin de connaitre la valeur des médias correspondants au FlowDetail SWIFT, il a donc fallu parcourir les fichiers XML puis les fichiers properties. Le parcourt des fichiers XML a été fait à l'aide d'un outil appelé JDOM dont le but est de manipuler un document Xml. Pour chaque bean ayant la même structure que celui ci-dessus, une ligne était créé et enregistré dans un nouveau fichier properties : 
+Afin de connaitre la valeur des médias correspondants au FlowDetail SWIFT, il a donc fallu parcourir les fichiers XML puis les fichiers properties. Le parcourt des fichiers XML a été fait à l'aide d'un outil appelé JDOM dont le but est de manipuler un document Xml. Pour chaque bean ayant la même structure que celui ci-dessus, une ligne est créé et enregistré dans un nouveau fichier properties : 
 
 \begin{figure}[ht!] %on ouvre l'environnement figure
 \centering
@@ -154,30 +155,57 @@ Dans le programme de migration, la clé correspondante est créé en fonction du sw
 
 
 \subsection{Refonte des IHM}
-Plusieurs interfaces homme machine (IHM) ont du être modifiées afin d'utiliser les nouveaux objets. Deux modules du logiciel MediaPlus Alto utilisent les FlowDetails : StpFlow et StpMonitoring et contiennent plusieurs fenêtres chacun correspondant à un projet JAVA: 
-\begin{itemize}
-	\item FlowDetails Viewer : permet de manipuler les FlowDetails. J'ai décidé de recréer ce projet car trop de modifications devaient être apportées, et le but était aussi de modifier les composant de l'IHM afin que les interactions utilisateurs soient plus efficaces. 
-	\item Des arbres RuleSolver : des Flowdetails ou TaskHandler sont attachés à ces arbres. 
-	\item StpMonitoring : permet de visualiser les messages transitant dans Amex et les FD correspondants.
-\end{itemize}
-
-Avant de modifier les interfaces, les objets métiers et services avec les méthodes CRUD ont été créés. 
-
+Plusieurs interfaces homme machine (IHM) ont du être modifiées afin d'utiliser les nouveaux objets. Deux modules du logiciel MediaPlus Alto utilisent les FlowDetails : StpFlow et StpMonitoring et contiennent plusieurs fenêtres, chacune correspondant à un projet JAVA: 
+\begin{enumerate}
+	\item Une fenêtre ``FlowDetails Viewer'' qui permet de manipuler les FlowDetails. J'ai décidé de recréer ce projet car trop de modifications devaient être apportées, et le but était aussi de modifier les composant de l'IHM afin que les interactions utilisateurs soient plus efficaces. 
+	\item Des fenêtre ``arbres RuleSolver'' où des Flowdetails et TaskHandler sont attachés aux arbres. 
+	\item Une fenêtre ``StpMonitoring'' qui permet de visualiser les messages transitant dans Amex et les FD correspondants.
+\end{enumerate}
+Avant de modifier les interfaces, les objets métiers ainsi que les services avec les méthodes CRUD ont été créés. 
+\newline
 Les différents projets sont les suivants : 
 \begin{itemize}
 	\item flowdetails-common contient les objets base de données et les interfaces de service
-	\item flowdetails-server contient les implémentations des services,les EJB et les interfaces et classes DAO
+	\item flowdetails-server contient les implémentations des services, les EJB et les interfaces et classes DAO
 	\item flowdetails-server-ear
 	\item flowdetails-viewer correspond à l'interface de manipulation des FD.
 \end{itemize}
-
-
+~\\
+Afin de se connecter à la base de données et d'éffectuer les requetes SQL, j'ai du choisir entre l'utilisation d'Hibernate ou JdbcTemplate. Afin de décider quelle solution utiliser, j'ai découvert Hibernate et réalisé un essai afin d'évaluer son efficacité avec la nouvelle modélisation base de données. \\
+\\
+\textbf{Hibernate}
+\newline
+C'est une solution open source de type ORM (Object Relational Mapping) qui permet de faire facilement persister des éléments d'une application. Hibernate permet de représenter des objets base de données en objets Java et vice versa. \\ 
+\newline
+Notre modèle entité relation n'est pas entièrement ``objets'' car il manque certains liens entre des tables (ce qui permet de gérer l'historique). Il est compliqué d'utiliser Hibernate pour ce type de modélisation, cela était possible mais la solution présentait quelques redondances, et les requetes étaient parfois un peu lentes.  \\
+\newline
 \textbf{Jdbc}
+\newline
 La technologie JDBC (Java DataBase Connectivity) est une interface de programmation fournie avec Java et permettant de se connecter à des bases de données. Il constitue un ensemble de classes permettant de développer des applications capables de se connecter à des serveurs de bases de données (SGBD).
 
+Le framework Spring Jdbc propose différentes approches pour créer la couche d'accès aux données JDBC. L'approche la plus connue est l'utilisation de la classe \textbf{JdbcTemplate} fournie par Spring. Elle simplifie l'utilisation de JDBC, car elle gère la création et la libération des ressources. Cela premet d'automatiser certaines tâches récurrentes, comme fermer la connexion à la base à la fin du programme. \\
+\\
+\newline
+\textbf{Le Design Pattern DAO}
+Les objets métiers ne vont pas communiquer dirrectement avec le SGBD mais communiqueront avec la couche DAO, cette dernière communiquera avec le SGBD. 
 
-Utilisation de JIdeSoft
-Travail sur l'IHM : trop d'étapes pour créer un FD, trop de validation et de fenêtres qui s'ouvrent
+
+Des interfaces et implémentations de services ont aussi été créés. 
+
+Le projet flowdetail-viewer qui représente l'interface de manipulation des FlowDetails doit appeler les services afin de récupérer des informations en base ou d'insérer/modifier des données. 
+Afin de fournir les services aux applications clientes nous avons utilisé les EJB3 et plus particulièrement les Session Beans. 
+\newline
+Un Session Bean est une application côté serveur fournissant un service à différentes applications clientes. 
+Les Session Beans constituent donc les briques de la logique métier d'une application. Ils traitent les données et effectuent les opérations liées à la logique de l'entreprise. Ils servent de ``pont'' entre les clients et les donnéees.
+
+Avec EJB3, le développeur n'a plus besoin de créer les interfaces home. Les éléments à mettre en place sont les classe du bean et l'interface métier. La classe d'un Session Bean EJV3 utilise les annotations:
+@Remote définit que la Session Bean fournit les méthodes à des clients distant (par opposition à @Local qui fournit les méthodes à des clients locaux). 
+@Stateless permet de déclarer un bean avec état, de tels beans ne sont accessibles que lors d'un ou plusieurs échanges avec le même client et ne conserve donc pas d'état entre les différents appels. Par opposition au session beans sans état qui peuvent être utilisés pour traiter les requêtes de plusieurs clients. 
+ 
+
+L'IHM est réalisée avec Swing ainsi que JIdeSoft (fournisseur de components Swing/Java).
+
+Un gros travail sur l'IHM a été réalisé, avec quelques réunions avec la MOA afin de récolter leurs besoins et d'être sur que les modifications apportées leur convenait. Une phase de réfléxion sur les étapes de création d'un FlowDetail a eu lieu par exemple. Quelques fenêtres ont été inclus dans d'autres afin de limiter le nombre de clique.
 
 
 \subsection{Bascule sur les nouveaux services}

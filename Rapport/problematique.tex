@@ -14,8 +14,12 @@ C'est une plateforme multi-format et multi-canal. Elle permet l'échange de messa
 \end{figure} %on ferme l'environnement figure
 
 Amex regroupe une centaine de flux. Ils sont utilisés notament pour la conversion d'un message d'un format X vers un format Y. 
-Cela peut se faire via un format d'échange pivot : le STPML qui est créé à partir du XML. Les différentes API utilisées par les flux Amex permettent, par exemple, d'envoyer des mails, des fax, d'auditer les messages en base de données ..\\
-Amex a un service d'Audit permettant de sauvegarder tous les messages transitants par cette plateforme. \\
+Cela peut se faire via un format d'échange pivot : le STPML qui est créé à partir du XML. 
+\\
+Il éxiste différentes API dans Amex utilisant les FlowDetails. 
+Le service d'audit a pour but de tracer tous les messages transitant par Amex. L'audit se fait dans des tables en base de données. Il éxiste différents statuts d'Audit décrivant le statut du message transitant, par exemple un message a comme statut PENDING à sa génération, SENT à son envoi si un acquittement est attendu, SENT NO\_ACK à son envoi si aucun acquittement n'est attendu, ACKNOWLEDGED à son acquittement, ERROR en cas d'erreur . \\
+
+Il est possible de paramétrer des taches automatiques à éxécuter lorsqu'un message transitant par Amex passe dans un certain statut d'audit. C'est le role du service de taches automatiques. Celles-ci peuvent etre un envoi d'un mail, un appel à un web service distant ou le post d'un message sur une file JMS ou MQ. \\
 \\
 Un flowdetail est un composant technique décrivant l'entrée ou la sortie d'un flux de communication. Ainsi lors de la création d'un nouveau flux, l'utilisateur crée deux Flowdetails, un représentant l'entré du flux (input) et un autre représentant sa sortie (output). Un flowdetail contient des informations permettant de connaitre l'emetteur et le destinataire du message ainsi que son format, média (d'entrée ou de sorti). 
 Ce composant est nécessaire pour le routage du message mais aussi pour l'audit. 

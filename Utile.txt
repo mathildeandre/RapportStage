@@ -1,0 +1,10 @@
+
+
+Lors d'un problème clone ou push/pull sur un repo GIT, cela peut venir du proxy. 
+	* git config --global --get https.proxy to check the currently ste proxy
+	* git config --global https.proxy https://proxyweb:8080
+	General cmd: git config --global https.proxy https://proxyuser:proxypwd@proxy.server.com:8080
+		avec : 	- change proxyuser to your proxy user
+			- change proxypwd to your proxy password
+			- change proxy.server.com to the URL of your proxy server
+			- change 8080 to the proxy port configured on your proxy server

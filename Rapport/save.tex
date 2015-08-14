@@ -1,0 +1,8 @@
+\subsubsection{Les API utilisant les FlowDetails}
+Dans la plateforme Amex, il y a différentes services  qui utilisent les flowdetails. Je vais décrire le fonctionnement de chacun d'eux. \\
+
+Le service d'audit a pour but de tracer tous les messages transitant par Amex. L'audit se fait dans des tables en base de données. Il éxiste différents statuts d'Audit décrivant le statut du message transitant, par exemple un message a comme statut PENDING à sa génération, SENT à son envoi si un acquittement est attendu, SENT NO\_ACK à son envoi si aucun acquittement est attendu, ACKNOWLEDGED à son acquittement, ERROR en cas d'erreur . \\
+
+Il est possible de paramétrer des taches automatiques à éxécuter lorsqu'un message transitant par Amex passe dans un certain statut d'audit. C'est le role du service de taches automatiques. Ces taches automatiques peuvent etre un envoi d'un mail, un appel à un web service distant ou le post d'un message sur une file JMS ou MQ.
+Il éxiste des objets TaskHandler permettant de savoir comment créer le message à envoyer et à qui l'envoyer. Ces informations sont contenues dans la table TaskHandler et sont paramétrables via des arbres RuleSolver. 
+

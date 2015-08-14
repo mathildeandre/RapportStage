@@ -1,0 +1,10 @@
+
+ *** 4.1.1 : a la fin expliquer l'utilité de chaque colonne de la table FLOWDETAIL
+
+ *** Création d'Amex
+
+ *** 4.2 : A revoir
+
+ *** Définir les arbres RS
+
+ *** Ajouter des liens
